@@ -1,17 +1,18 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import "./App.css";
+// src/App.js
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
 
-function App() {
-  // const [count, setCount] = useState(0);
-
+const App = () => {
   return (
-    <div className="bg-gray-50">
-      <div className="flex justify-center items-center h-screen">
-        <Button>Shadcn/ui integrated.</Button>
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" exact element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
