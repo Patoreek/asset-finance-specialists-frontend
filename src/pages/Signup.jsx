@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import axios from "axios";
+import apiClient from "../lib/apiClient";
 
 import ProjectNote from "../components/ProjectNote";
 import { Button } from "@/components/ui/button";
@@ -94,7 +94,7 @@ const SignUp = () => {
   const onSubmit = async (data) => {
     try {
       const serverUrl = import.meta.env.VITE_SERVER_URL;
-      const response = await axios.post(serverUrl + `auth/signup`, data);
+      const response = await apiClient.post(`auth/signup`, data);
       if (response.data.success) {
         toast({
           title: "Sign up successful! Redirecting to login.",

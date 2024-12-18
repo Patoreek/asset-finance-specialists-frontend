@@ -5,7 +5,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import apiClient from "../lib/apiClient";
 
 import {
   Form,
@@ -32,12 +32,15 @@ const loginSchema = z.object({
 const LoginForm = () => {
   const form = useForm({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   const onSubmit = async (data) => {
     try {
-      const serverUrl = import.meta.env.VITE_SERVER_URL;
-      const response = await axios.post(serverUrl + `auth/login`, data);
+      const response = await apiClient.post(`auth/login`, data);
       if (response.data.accessToken) {
         localStorage.setItem("accessToken", response.data.accessToken);
         window.location.href = "/applications";
