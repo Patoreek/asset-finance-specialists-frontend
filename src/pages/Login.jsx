@@ -5,6 +5,8 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
+import axios from "axios";
+
 import {
   Form,
   FormField,
@@ -12,8 +14,8 @@ import {
   FormLabel,
   FormControl,
 } from "@/components/ui/form";
+import ProjectNote from "../components/ProjectNote";
 
-// Zod schema for form validation
 const loginSchema = z.object({
   email: z
     .string({
@@ -32,12 +34,22 @@ const LoginForm = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data) => {
-    console.log("Login Data:", data);
+  const onSubmit = async (data) => {
+    try {
+      const serverUrl = import.meta.env.VITE_SERVER_URL;
+      const response = await axios.post(serverUrl + `auth/login`, data);
+      if (response.data.accessToken) {
+        localStorage.setItem("accessToken", response.data.accessToken);
+        window.location.href = "/applications";
+      }
+    } catch (error) {
+      console.error("Axios error:", error.message);
+    }
   };
 
   return (
-    <div className="flex justify-center items-center h-full bg-slate-200">
+    <div className="flex flex-col gap-4 justify-center items-center h-full bg-slate-200">
+      <ProjectNote />
       <div className="p-6 border rounded-lg shadow-md bg-white w-96">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
@@ -87,7 +99,10 @@ const LoginForm = () => {
               )}
             />
 
-            <Button type="submit" className="w-full">
+            <Button
+              type="submit"
+              className="w-full bg-blue-500 hover:bg-blue-600"
+            >
               Log In
             </Button>
           </form>

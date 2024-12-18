@@ -2,8 +2,14 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import axios from "axios";
+
+import ProjectNote from "../components/ProjectNote";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/hooks/use-toast";
+
 import { Link } from "react-router-dom";
 import {
   Form,
@@ -13,7 +19,6 @@ import {
   FormControl,
 } from "@/components/ui/form";
 
-// Zod schema for form validation
 const signupSchema = z
   .object({
     firstName: z
@@ -71,6 +76,8 @@ const signupSchema = z
   });
 
 const SignUp = () => {
+  const { toast } = useToast();
+
   const form = useForm({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -84,15 +91,30 @@ const SignUp = () => {
     },
   });
 
-  const onSubmit = (data) => {
-    console.log("Sign Up Data:", data);
+  const onSubmit = async (data) => {
+    try {
+      const serverUrl = import.meta.env.VITE_SERVER_URL;
+      const response = await axios.post(serverUrl + `auth/signup`, data);
+      if (response.data.success) {
+        toast({
+          title: "Sign up successful! Redirecting to login.",
+          variant: "success",
+        });
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2500);
+      }
+    } catch (error) {
+      console.error("Axios error:", error.message);
+    }
   };
 
   return (
-    <div className="flex justify-center items-center h-full bg-slate-200">
+    <div className="flex gap-4 justify-center items-center h-full bg-slate-200">
+      <ProjectNote />
       <div className="p-6 border rounded-lg shadow-md bg-white w-2/6">
+        <Toaster />
         <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
-
         {Object.keys(form.formState.errors).length > 0 && (
           <div className="mb-4 p-3 border-l-4 border-red-500 bg-red-100 text-red-700 text-sm font-medium rounded">
             <ul>
@@ -212,7 +234,10 @@ const SignUp = () => {
               )}
             />
 
-            <Button type="submit" className="w-full">
+            <Button
+              type="submit"
+              className="w-full bg-blue-500 hover:bg-blue-600"
+            >
               Sign Up
             </Button>
           </form>
