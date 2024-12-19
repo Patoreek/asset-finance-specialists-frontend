@@ -7,7 +7,7 @@ const Application = () => {
   const { id } = useParams();
 
   return (
-    <div className="max-w-7xl w-full mx-auto h-full bg-gray-100 py-10 px-2">
+    <div className="max-w-7xl w-full mx-auto min-h-full h-auto bg-gray-100 py-10 px-2">
       <ApplicationForm id={id} />
     </div>
   );
