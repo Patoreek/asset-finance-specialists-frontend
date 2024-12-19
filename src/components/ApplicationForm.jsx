@@ -63,17 +63,18 @@ const applicationSchema = z.object({
 
 const ApplicationForm = ({ id }) => {
   const navigate = useNavigate();
+  const [edit, setEdit] = useState(false);
 
-  const edit = id === "new" ? false : true;
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    if (!edit) return;
+    setEdit(id !== "new");
+    if (id === "new") return;
     const fetchApplicationData = async () => {
       await getApplicationData();
     };
     fetchApplicationData();
-  }, []);
+  }, [id]);
 
   const form = useForm({
     resolver: zodResolver(applicationSchema),
@@ -128,7 +129,6 @@ const ApplicationForm = ({ id }) => {
   };
 
   const updateApplication = async (data) => {
-    console.log("updating application", data);
     try {
       const response = await apiClient.put(`application/update/${id}`, data);
       if (!response?.data?.application?._id)
@@ -148,6 +148,7 @@ const ApplicationForm = ({ id }) => {
 
       const applicationId = response.data.application._id;
       toast.success("Application Created");
+      setEdit(true);
       navigate(`/application/${applicationId}`);
     } catch (error) {
       console.error("Axios error [application/create]:", error.message);
@@ -163,149 +164,161 @@ const ApplicationForm = ({ id }) => {
 
   return (
     <div>
-      <BackButton />
-      <div className="flex flex-col justify-center items-center h-full">
-        <Toaster richColors />
-        {userData && (
-          <div className="w-2/5 p-8 mb-6 border rounded-lg shadow-lg bg-white">
-            <h3 className="text-2xl font-semibold mb-6 text-center text-gray-800">
-              User Information
-            </h3>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center text-gray-700">
-                <span className="font-medium">First Name:</span>
-                <span className="text-gray-500">{userData.firstName}</span>
+      <div className="flex justify-start w-4/5 py-2">
+        <BackButton to={"/applications"} />
+      </div>
+      <div className="flex w-4/5">
+        <div className="flex gap-4 w-full">
+          {userData && (
+            <div className="w-full h-full p-8 mb-6 border rounded-lg shadow-lg bg-white">
+              <h3 className="text-2xl font-semibold mb-6 text-center text-gray-800">
+                User Information
+              </h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center text-gray-700">
+                  <span className="font-medium">First Name:</span>
+                  <span className="text-gray-500">
+                    {userData.firstName} {userData.lastName}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-gray-700">
+                  <span className="font-medium">Address:</span>
+                  <span className="text-gray-500">{userData.address}</span>
+                </div>
+                <div className="flex justify-between items-center text-gray-700">
+                  <span className="font-medium">Phone:</span>
+                  <span className="text-gray-500">{userData.phone}</span>
+                </div>
+                <div className="flex justify-between items-center text-gray-700">
+                  <span className="font-medium">Email:</span>
+                  <span className="text-gray-500">{userData.email}</span>
+                </div>
               </div>
-              <div className="flex justify-between items-center text-gray-700">
-                <span className="font-medium">Last Name:</span>
-                <span className="text-gray-500">{userData.lastName}</span>
-              </div>
-              <div className="flex justify-between items-center text-gray-700">
-                <span className="font-medium">Address:</span>
-                <span className="text-gray-500">{userData.address}</span>
-              </div>
-              <div className="flex justify-between items-center text-gray-700">
-                <span className="font-medium">Phone:</span>
-                <span className="text-gray-500">{userData.phone}</span>
-              </div>
-              <div className="flex justify-between items-center text-gray-700">
-                <span className="font-medium">Email:</span>
-                <span className="text-gray-500">{userData.email}</span>
-              </div>
-            </div>
-          </div>
-        )}
-        <div className="p-6 border rounded-lg shadow-md bg-white w-2/5">
-          <h2 className="text-2xl font-bold mb-6 text-center">
-            {edit ? "Update " : "Create New "}Application
-          </h2>
-          {Object.keys(form.formState.errors).length > 0 && (
-            <div className="mb-4 p-3 border-l-4 border-red-500 bg-red-100 text-red-700 text-sm font-medium rounded">
-              <ul>
-                {Object.values(form.formState.errors).map((error, index) => (
-                  <li key={index}>{error.message}</li>
-                ))}
-              </ul>
             </div>
           )}
+          <div
+            className={`p-6 border rounded-lg shadow-md bg-white ${
+              edit ? "w-full" : "w-1/2 mx-auto"
+            } h-full`}
+          >
+            <h2 className="text-2xl font-bold mb-6 text-center">
+              {edit ? "Update " : "Create New "}Application
+            </h2>
+            {Object.keys(form.formState.errors).length > 0 && (
+              <div className="mb-4 p-3 border-l-4 border-red-500 bg-red-100 text-red-700 text-sm font-medium rounded">
+                <ul>
+                  {Object.values(form.formState.errors).map((error, index) => (
+                    <li key={index}>{error.message}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="applicationName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Application Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter application name" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="income"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Income ($AUD)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="any"
-                        placeholder="Enter income"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="expenses"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Expenses ($AUD)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="any"
-                        placeholder="Enter expenses"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="assets"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Assets ($AUD)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="any"
-                        placeholder="Enter assets"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="liabilities"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Liabilities ($AUD)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="any"
-                        placeholder="Enter liabilities"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <Button
-                type="submit"
-                className="w-full bg-blue-500 hover:bg-blue-600"
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
               >
-                {edit ? "Update" : "Submit"} Application
-              </Button>
-            </form>
-          </Form>
+                <FormField
+                  control={form.control}
+                  name="applicationName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Application Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter application name"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="income"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Income ($AUD)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="any"
+                          placeholder="Enter income"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="expenses"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Expenses ($AUD)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="any"
+                          placeholder="Enter expenses"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="assets"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Assets ($AUD)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="any"
+                          placeholder="Enter assets"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="liabilities"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Liabilities ($AUD)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="any"
+                          placeholder="Enter liabilities"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  type="submit"
+                  className="w-full bg-blue-500 hover:bg-blue-600"
+                >
+                  {edit ? "Update" : "Submit"} Application
+                </Button>
+              </form>
+            </Form>
+          </div>
         </div>
       </div>
+      <Toaster richColors />
     </div>
   );
 };

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import apiClient from "../lib/apiClient";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
+import apiClient from "../lib/apiClient";
 import {
   Table,
   TableBody,
@@ -38,7 +40,6 @@ const Applications = () => {
   const getApplications = async () => {
     try {
       const response = await apiClient.get(`application/get`);
-      console.log(response);
       setApplications(response.data.applications);
     } catch (error) {
       console.error("Axios error [application/get]:", error.message);
@@ -49,6 +50,7 @@ const Applications = () => {
     try {
       const response = await apiClient.delete(`application/delete/${appId}`);
       if (response.status === 200) {
+        toast.success("Application deleted");
         setApplications((prevApplications) =>
           prevApplications.filter((app) => app._id !== appId)
         );
@@ -63,8 +65,9 @@ const Applications = () => {
   };
   return (
     <div className="max-w-7xl w-full mx-auto py-10 px-2">
+      <Toaster richColors />
       <div className="flex justify-between items-center">
-        <h1>Applications</h1>
+        <h1 className="text-2xl font-semibold">Applications</h1>
         <Button
           className=" bg-blue-500 hover:bg-blue-600"
           onClick={createNewHandler}
@@ -78,7 +81,7 @@ const Applications = () => {
           <TableCaption>A list of your finance applications.</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead>App Name</TableHead>
+              <TableHead>Name</TableHead>
               <TableHead>Income</TableHead>
               <TableHead className="text-right">Expenses</TableHead>
               <TableHead className="text-right">Assets</TableHead>
@@ -92,14 +95,18 @@ const Applications = () => {
                 key={app._id}
                 onClick={() => navigate(`/application/${app._id}`)}
               >
-                <TableCell>{app.name}</TableCell>
-                <TableCell>AUD ${app.income}</TableCell>
-                <TableCell className="text-right">
-                  AUD ${app.expenses}
+                <TableCell className="font-semibold">{app.name}</TableCell>
+                <TableCell>
+                  AUD ${Number(app.income).toLocaleString()}
                 </TableCell>
-                <TableCell className="text-right">AUD ${app.assets}</TableCell>
                 <TableCell className="text-right">
-                  AUD ${app.liabilities}
+                  AUD ${Number(app.expenses).toLocaleString()}
+                </TableCell>
+                <TableCell className="text-right">
+                  AUD ${Number(app.assets).toLocaleString()}
+                </TableCell>
+                <TableCell className="text-right">
+                  AUD ${Number(app.liabilities).toLocaleString()}
                 </TableCell>
                 <TableCell className="text-right">
                   <div
