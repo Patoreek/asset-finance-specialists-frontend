@@ -1,7 +1,9 @@
 import apiClient from "../lib/apiClient";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 export const checkAuth = async () => {
+  const navigate = useNavigate();
   const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
     return false;
@@ -23,7 +25,7 @@ export const checkAuth = async () => {
     } catch (refreshError) {
       console.error("Token refresh failed:", refreshError.message);
       localStorage.removeItem("accessToken");
-      window.location.href = "/";
+      navigate("/");
       return false;
     }
   } catch (error) {
@@ -44,7 +46,8 @@ export const refreshToken = async () => {
     return true;
   } catch (error) {
     console.error("Refresh token failed:", error);
-    window.location.href = "/";
+    const navigate = useNavigate();
+    navigate("/");
     return false;
   }
 };

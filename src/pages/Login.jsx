@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import apiClient from "../lib/apiClient";
+import { useNavigate } from "react-router-dom";
 
 import {
   Form,
@@ -30,6 +31,8 @@ const loginSchema = z.object({
 });
 
 const LoginForm = () => {
+  const navigate = useNavigate();
+
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -43,7 +46,7 @@ const LoginForm = () => {
       const response = await apiClient.post(`auth/login`, data);
       if (response.data.accessToken) {
         localStorage.setItem("accessToken", response.data.accessToken);
-        window.location.href = "/applications";
+        navigate("/applications");
       }
     } catch (error) {
       console.error("Axios error:", error.message);

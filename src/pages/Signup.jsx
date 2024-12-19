@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import {
   Form,
@@ -77,6 +78,7 @@ const signupSchema = z
 
 const SignUp = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const form = useForm({
     resolver: zodResolver(signupSchema),
@@ -101,7 +103,7 @@ const SignUp = () => {
           variant: "success",
         });
         setTimeout(() => {
-          window.location.href = "/";
+          navigate("/");
         }, 2500);
       }
     } catch (error) {

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { refreshToken } from "../lib/authUtils";
+import { useNavigate } from "react-router-dom";
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL,
@@ -30,7 +31,8 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         console.error("Token refresh failed:", refreshError.message);
         localStorage.removeItem("accessToken");
-        window.location.href = "/";
+        const navigate = useNavigate();
+        navigate("/");
         return Promise.reject(refreshError);
       }
     }
