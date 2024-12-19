@@ -6,8 +6,8 @@ import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Toaster } from "@/components/ui/toaster";
-import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 import {
   Form,
@@ -63,7 +63,6 @@ const applicationSchema = z.object({
 
 const ApplicationForm = ({ id }) => {
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const edit = id === "new" ? false : true;
   const [userData, setUserData] = useState(null);
@@ -130,6 +129,15 @@ const ApplicationForm = ({ id }) => {
 
   const updateApplication = async (data) => {
     console.log("updating application", data);
+    try {
+      const response = await apiClient.put(`application/update/${id}`, data);
+      if (!response?.data?.application?._id)
+        throw new Error("Application ID is missing in the response");
+
+      toast.success("Application Updated");
+    } catch (error) {
+      console.error("Axios error [application/create]:", error.message);
+    }
   };
 
   const createApplication = async (data) => {
@@ -139,6 +147,7 @@ const ApplicationForm = ({ id }) => {
         throw new Error("Application ID is missing in the response");
 
       const applicationId = response.data.application._id;
+      toast.success("Application Created");
       navigate(`/application/${applicationId}`);
     } catch (error) {
       console.error("Axios error [application/create]:", error.message);
@@ -156,7 +165,7 @@ const ApplicationForm = ({ id }) => {
     <div>
       <BackButton />
       <div className="flex flex-col justify-center items-center h-full">
-        <Toaster />
+        <Toaster richColors />
         {userData && (
           <div className="w-2/5 p-8 mb-6 border rounded-lg shadow-lg bg-white">
             <h3 className="text-2xl font-semibold mb-6 text-center text-gray-800">
