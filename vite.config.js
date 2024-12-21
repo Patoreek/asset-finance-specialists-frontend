@@ -8,6 +8,10 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-    extensions: [".js", ".jsx", ".ts", ".tsx"],
+  },
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./vite.setup.js", // Optional, for any setup like adding jest-dom matchers
   },
 });
