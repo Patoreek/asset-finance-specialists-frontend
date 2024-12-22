@@ -12,6 +12,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
-    setupFiles: "./vite.setup.js", // Optional, for any setup like adding jest-dom matchers
+    setupFiles: "./vite.setup.js",
+    verbose: false,
   },
 });

@@ -36,7 +36,7 @@ const signupSchema = z
 
     phone: z
       .string({
-        required_error: "Phone number is required",
+        required_error: "Invalid phone number",
       })
       .regex(
         /^\+?(\d{1,4})?(\s|-)?\(?\d{1,4}\)?(\s|-)?\d{1,4}(\s|-)?\d{1,4}$/,
@@ -53,19 +53,19 @@ const signupSchema = z
 
     email: z
       .string({
-        required_error: "Email is required",
+        required_error: "Please enter a valid email address",
       })
       .email({ message: "Please enter a valid email address" }),
 
     password: z
       .string({
-        required_error: "Password is required",
+        required_error: "Password must be at least 6 characters long",
       })
       .min(6, { message: "Password must be at least 6 characters long" }),
 
     confirmPassword: z
       .string({
-        required_error: "Confirm password is required",
+        required_error: "Confirm password must be at least 6 characters long",
       })
       .min(6, {
         message: "Confirm password must be at least 6 characters long",
@@ -107,7 +107,20 @@ const SignUp = () => {
         }, 2500);
       }
     } catch (error) {
-      console.error("Axios error:", error.message);
+      console.error("Axios error:", error);
+      console.error("asdadfsasd", error);
+      if (
+        error.status === 400 &&
+        error.response.data.message == "Email already in use"
+      ) {
+        form.setError("apiError", {
+          message: "Email already in use",
+        });
+        toast({
+          title: "Email already in use",
+          variant: "error",
+        });
+      }
     }
   };
 
