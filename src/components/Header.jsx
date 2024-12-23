@@ -8,11 +8,9 @@ const Header = () => {
 
   const logoutHandler = async () => {
     try {
-      const response = await apiClient.post(`auth/logout`);
-      if (response.data.accessToken) {
-        localStorage.setItem("accessToken", response.data.accessToken);
-        navigate("/applications");
-      }
+      await apiClient.post(`auth/logout`);
+      localStorage.removeItem("accessToken");
+      navigate("/");
     } catch (error) {
       if (error.response && error.response.status === 400) {
         form.setError("apiError", {
