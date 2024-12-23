@@ -23,7 +23,7 @@ To set up the project locally:
 
 ## Environment Variables
 
-This project uses environment variables for configuration, particularly for the `apiClient`. Ensure you have a `.env` file at the root of your project with necessary variables like:
+This project uses environment variables for configuration, particularly for the `apiClient`. Ensure you have a `.env` file at the root of your project with necessary variables.
 
 ## Branches
 

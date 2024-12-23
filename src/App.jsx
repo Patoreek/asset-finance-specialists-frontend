@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Applications from "./pages/Applications";
 import Application from "./pages/Application";
 import PrivateRoute from "./components/PrivateRoute";
+import Header from "./components/Header";
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
           path="/applications"
           element={
             <PrivateRoute>
+              <Header />
               <Applications />
             </PrivateRoute>
           }
@@ -23,6 +25,7 @@ const App = () => {
           path="/application/:id"
           element={
             <PrivateRoute>
+              <Header />
               <Application />
             </PrivateRoute>
           }
